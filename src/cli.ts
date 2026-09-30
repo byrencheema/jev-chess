@@ -205,7 +205,7 @@ async function analyze(args: string[]) {
   const { values, positionals } = parseArgs({
     args,
     allowPositionals: true,
-    options: { depth: { type: "string", default: "14" }, nodes: { type: "string" }, player: { type: "string", default: "jev" }, out: { type: "string" } },
+    options: { depth: { type: "string", default: "14" }, nodes: { type: "string" }, player: { type: "string", default: "jev" }, out: { type: "string" }, threads: { type: "string", default: "1" } },
   });
   const file = positionals[0];
   if (!file) throw new Error("give a results/raw/*.jsonl file");
@@ -213,7 +213,7 @@ async function analyze(args: string[]) {
   const limits = values.nodes ? { nodes: Number(values.nodes) } : { depth: Number(values.depth) };
   const rows = [...latestById(readJsonl<GameRow>(file)).values()].filter((r) => !r.error);
   const done = latestById(readJsonl<GameAnalysis>(out));
-  const engine = await new Engine([STOCKFISH_PATH]).init({ Threads: 4, Hash: 256 });
+  const engine = await new Engine([STOCKFISH_PATH]).init({ Threads: Number(values.threads), Hash: 64 });
   const evaluator = new Evaluator(engine, limits);
   for (const r of rows) {
     for (const color of ["w", "b"] as const) {
@@ -244,13 +244,13 @@ async function analyze(args: string[]) {
 }
 
 async function loose(args: string[]) {
-  const { values, positionals } = parseArgs({ args, allowPositionals: true, options: { depth: { type: "string", default: "16" }, out: { type: "string" } } });
+  const { values, positionals } = parseArgs({ args, allowPositionals: true, options: { depth: { type: "string", default: "14" }, out: { type: "string" }, threads: { type: "string", default: "1" } } });
   const file = positionals[0];
   if (!file) throw new Error("give a puzzles jsonl file");
   const out = values.out ?? `results/analysis/${basename(file, ".jsonl")}-loose.jsonl`;
   const rows = [...latestById(readJsonl<PuzzleResult>(file)).values()].filter((r) => !r.error);
   const done = latestById(readJsonl<LooseCheck>(out));
-  const engine = await new Engine([STOCKFISH_PATH]).init({ Threads: 4, Hash: 256 });
+  const engine = await new Engine([STOCKFISH_PATH]).init({ Threads: Number(values.threads), Hash: 64 });
   const evaluator = new Evaluator(engine, { depth: Number(values.depth) });
   for (const r of rows) {
     if (r.solved || done.has(r.id)) continue;

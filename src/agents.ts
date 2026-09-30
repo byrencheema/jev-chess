@@ -1,7 +1,7 @@
 import { Chess } from "chess.js";
 import { LC0_PATH, MAIA_DIR, STOCKFISH_PATH, jevConfig, type JevOptions } from "./config.ts";
 import { JevClient, type ChoiceQuestion, type Criterion } from "./jev.ts";
-import { describeMove, HEADLINE, promptId, renderState, VARIANTS, X3_STATES, type Position, type PromptVariant } from "./prompt.ts";
+import { describeMove, describeMoveObject, HEADLINE, promptId, renderState, VARIANTS, X3_STATES, type Position, type PromptVariant } from "./prompt.ts";
 import { seeded, shuffle, type Rng } from "./rng.ts";
 import { Engine, type Score, type SearchLimits } from "./uci.ts";
 
@@ -57,7 +57,7 @@ export async function askJev(client: JevClient, variant: PromptVariant, pos: Pos
   const moves = variant.shuffle ? shuffle(pos.moves, seeded(`order:${pos.fen}`)) : pos.moves;
   const sanOf = new Map(moves.map((m) => [variant.keys === "uci" ? m.uci : m.san, m.san]));
   const criteria: Record<string, Criterion> = {};
-  for (const m of moves) criteria[variant.keys === "uci" ? m.uci : m.san] = variant.describe ? describeMove(m) : null;
+  for (const m of moves) criteria[variant.keys === "uci" ? m.uci : m.san] = variant.describe === "object" ? describeMoveObject(m) : variant.describe ? describeMove(m) : null;
   const questions: Record<string, ChoiceQuestion> = {};
   variant.instructions.forEach((instructions, i) => (questions[`q${i}`] = { type: "choice", instructions, criteria }));
   const r = await client.ask(renderState(pos, variant.state), questions);

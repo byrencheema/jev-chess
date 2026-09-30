@@ -143,12 +143,27 @@ export function describeMove(m: LegalMove): string {
   return `${piece} ${m.from} ${action}${promo}${check}`;
 }
 
+export function describeMoveObject(m: LegalMove): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (m.flags.includes("k") || m.flags.includes("q")) out.castles = m.flags.includes("k") ? "kingside" : "queenside";
+  else {
+    out.piece = PIECE_NAMES[m.piece]!;
+    out.from = m.from;
+    out.to = m.to;
+  }
+  if (m.captured) out.captures = PIECE_NAMES[m.captured]!;
+  if (m.promotion) out.promotes_to = PIECE_NAMES[m.promotion]!;
+  if (m.san.endsWith("#")) out.gives = "checkmate";
+  else if (m.san.endsWith("+")) out.gives = "check";
+  return out;
+}
+
 export interface PromptVariant {
   name: string;
   instructions: Instructions[];
   state: StateSpec;
   keys: "san" | "uci";
-  describe: boolean;
+  describe: boolean | "object";
   shuffle: boolean;
 }
 
@@ -179,6 +194,12 @@ export const VARIANTS: Record<string, PromptVariant> = Object.fromEntries(
     variant("describe", { describe: true }),
     variant("shuffle", { shuffle: true }),
     variant("three-questions", { instructions: [INSTRUCTIONS, GRANDMASTER, STRUCTURED] }),
+    variant("describe-object", { describe: "object" }),
+    variant("describe-pieces", { describe: true, state: { ...V0_STATE, pieces: true } }),
+    variant("describe-pieces-no-board", { describe: true, state: { ...V0_STATE, board: false, pieces: true } }),
+    variant("describe-structured", { describe: true, instructions: [STRUCTURED] }),
+    variant("describe-structured-pieces-no-board", { describe: true, instructions: [STRUCTURED], state: { ...V0_STATE, board: false, pieces: true } }),
+    variant("describe-three-questions", { describe: true, instructions: [INSTRUCTIONS, GRANDMASTER, STRUCTURED] }),
   ].map((v) => [v.name, v]),
 );
 

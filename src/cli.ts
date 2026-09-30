@@ -273,6 +273,18 @@ async function elo(args: string[]) {
   }
 }
 
+async function spend() {
+  let tokens = 0;
+  const lines: string[] = [];
+  for (const f of new Bun.Glob("results/{raw,dev}/*.jsonl").scanSync(".")) {
+    const t = readJsonl<{ inputTokens?: number }>(f).reduce((s, r) => s + (r.inputTokens ?? 0), 0);
+    if (!t) continue;
+    tokens += t;
+    lines.push(`${formatUsd(costUsd(t)).padStart(10)}  ${f}`);
+  }
+  console.log(`${lines.sort().join("\n")}\n${formatUsd(costUsd(tokens)).padStart(10)}  total, ${tokens.toLocaleString()} input tokens`);
+}
+
 async function compare(args: string[]) {
   const { values, positionals } = parseArgs({ args, allowPositionals: true, options: { baseline: { type: "string" }, out: { type: "string" } } });
   const files = positionals;
@@ -305,7 +317,7 @@ async function summary(args: string[]) {
 }
 
 const [cmd, ...rest] = Bun.argv.slice(2);
-const commands: Record<string, (args: string[]) => Promise<void>> = { play, eval: evalCmd, puzzles, analyze, loose, elo, compare, pgn, summary };
+const commands: Record<string, (args: string[]) => Promise<void>> = { play, eval: evalCmd, puzzles, analyze, loose, elo, compare, pgn, summary, spend };
 const run = cmd ? commands[cmd] : undefined;
 if (!run) {
   console.error(USAGE);

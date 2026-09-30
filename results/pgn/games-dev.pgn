@@ -1,0 +1,359 @@
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "1"]
+[White "jev-v0"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "Petrov defence"]
+[Termination "checkmate"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nxe4 4. Qh5 g6 5. Qxg6 fxg6 6. Nxg6 hxg6 7. d4 Qf6 8. d5 Nc5 9. Bc4 Qg7 10. O-O Rh7 11. Re1+ Be7 12. Rxe7+ Qxe7 13. d6 Qe1+ 14. Bf1 cxd6 15. Nc3 Qxc1 16. Rxc1 Nc6 17. Re1+ Kf8 18. Re8+ Kxe8 19. Nd5 Kf8 20. Ne7 Kf7 21. Nxc6 Kg7 22. Nxa7 g5 23. Nxc8 Ne4 24. Nxd6 Nxd6 25. Bd3 Rah8 26. Bxh7 Rc8 27. Bg6 Rc4 28. Be4 Rxe4 29. Kf1 Re6 30. c3 Kf7 31. c4 Ke7 32. c5 Ne4 33. c6 Nd2+ 34. Kg1 Re1# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "1"]
+[White "jev:describe-pieces-no-board"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "Petrov defence"]
+[Termination "checkmate"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 Bc5 4. Nxf7 Bxf2+ 5. Kxf2 Kxf7 6. Bc4+ d5 7. Bxd5+ Kg6 8. Qg4+ Nxg4+ 9. Kg3 Qd6+ 10. Kf3 a6 11. Bf7+ Kxf7 12. e5 Qd5+ 13. Kg3 Kg6 14. e6 Qe5+ 15. Kxg4 Bxe6+ 16. Kf3 Rf8# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "1"]
+[White "jev:describe-pieces"]
+[Black "stockfish:skill=0"]
+[Result "1/2-1/2"]
+[Opening "Petrov defence"]
+[Termination "threefold"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d5 4. exd5 Nxd5 5. Nxf7 Qe7+ 6. Ne5 Qxe5+ 7. Qe2 Qxe2+ 8. Kxe2 Nc6 9. Nc3 Nxc3+ 10. dxc3 Be6 11. Be3 O-O-O 12. Bxa7 b6 13. Bxb6 cxb6 14. Rd1 b5 15. Rxd8+ Kc7 16. Rxf8 Bc4+ 17. Kd2 Rxf8 18. Bxc4 bxc4 19. Rd1 g6 20. Rc1 Rxf2+ 21. Ke3 Rxg2 22. Rg1 Rxc2 23. Rc1 Rg2 24. Rg1 Rxg1 25. Kd2 Rb1 26. Kc2 Ra1 27. b3 Rxa2+ 28. Kb1 cxb3 29. c4 Nb4 30. c5 Kc6 31. Kc1 Nd3+ 32. Kb1 Rb2+ 33. Ka1 Ra2+ 34. Kb1 Nb4 35. Kc1 Nd3+ 36. Kb1 1/2-1/2
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "2"]
+[White "stockfish:skill=0"]
+[Black "jev-v0"]
+[Result "1-0"]
+[Opening "Petrov defence"]
+[Termination "checkmate"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 Nxe4 4. Qf3 Nxf2 5. Qxf7# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "2"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces-no-board"]
+[Result "1-0"]
+[Opening "Petrov defence"]
+[Termination "checkmate"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nc3 Nxe4 4. Nxe4 d5 5. Qe2 dxe4 6. Nxe5 Qxd2+ 7. Bxd2 e3 8. Qb5+ Nc6 9. O-O-O exd2+ 10. Kb1 Bb4 11. Qa4 O-O 12. f4 Nxe5 13. Be2 Nd3 14. cxd3 Bc3 15. Qa3 Bxb2 16. Qb3 Rd8 17. Kxb2 Rxd3 18. Bxd3 Bg4 19. Rxd2 Rd8 20. Bxh7+ Kxh7 21. Rxd8 Bd1 22. Qd3+ Kh6 23. Rh8# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "2"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces"]
+[Result "1-0"]
+[Opening "Petrov defence"]
+[Termination "checkmate"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nc3 Nxe4 4. Nxe4 d5 5. Nc3 d4 6. Ne4 Qd5 7. Bd3 Qxe4+ 8. Bxe4 d3 9. Nxe5 dxc2 10. Qe2 Bb4 11. Nd3 Bxd2+ 12. Kxd2 O-O 13. Kxc2 Rd8 14. Bf4 Rxd3 15. Bxd3 Bf5 16. Qe8# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "3"]
+[White "jev-v0"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "Sicilian, open with d6"]
+[Termination "checkmate"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Bb5+ Nbd7 6. Bxd7+ Qxd7 7. O-O g6 8. e5 dxe5 9. Qh5 Nxh5 10. Bh6 e6 11. Nxe6 fxe6 12. Bxf8 e4 13. Re1 Kxf8 14. Rxe4 Qd1+ 15. Re1 Qxe1# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "3"]
+[White "jev:describe-pieces-no-board"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "Sicilian, open with d6"]
+[Termination "checkmate"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Bb5+ Nbd7 6. Bxd7+ Kxd7 7. Qg4+ Nxg4 8. O-O Nf6 9. Ne6 Qe8 10. Nxf8+ Qxf8 11. Rd1 a5 12. Rxd6+ exd6 13. Nc3 Nh5 14. Nd5 Ra6 15. Nb6+ Rxb6 16. Rb1 Qe8 17. Bh6 gxh6 18. Rd1 Nf6 19. Rxd6+ Kxd6 20. e5+ Qxe5 21. Kf1 Rxb2 22. c3 Rb1# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "3"]
+[White "jev:describe-pieces"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "Sicilian, open with d6"]
+[Termination "checkmate"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Bb5+ Nbd7 6. Bxd7+ Qxd7 7. O-O Nxe4 8. Nf3 e6 9. Nd4 d5 10. Nxe6 fxe6 11. Qxd5 exd5 12. Rd1 Be7 13. Rxd5 Qxd5 14. Bf4 Qd1# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "4"]
+[White "stockfish:skill=0"]
+[Black "jev-v0"]
+[Result "1-0"]
+[Opening "Sicilian, open with d6"]
+[Termination "checkmate"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Bb5+ Bd7 6. c4 Bxb5 7. e5 dxe5 8. Nxb5 Qa5+ 9. Nd2 Qxd2+ 10. Qxd2 Nd5 11. Qg5 Nf4 12. Qg3 Nxg2+ 13. Kf1 Ne3+ 14. Qxe3 Nc6 15. Nc7+ Kd7 16. Qh3+ Kxc7 17. b4 Nxb4 18. Ba3 Nxa2 19. Ke1 Kc6 20. Qf3+ Kc7 21. Rxa2 Kb6 22. Qb3+ Kc6 23. Qf3+ Kc7 24. Rd2 e4 25. Qe3 Kc6 26. Qc5# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "4"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces-no-board"]
+[Result "1/2-1/2"]
+[Opening "Sicilian, open with d6"]
+[Termination "threefold"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. f3 Nxe4 6. Bb5+ Bd7 7. Bxd7+ Qxd7 8. fxe4 Nc6 9. Be3 Nxd4 10. Qxd4 O-O-O 11. Qc3+ Qc6 12. O-O Qxc3 13. bxc3 d5 14. e5 d4 15. Bf2 dxc3 16. Nxc3 Rd1 17. Raxd1 e6 18. Ne4 Bc5 19. Nd6+ Bxd6 20. exd6 Rd8 21. a3 Rxd6 22. Rc1 Rd1 23. Rcxd1 b5 24. Rfe1 b4 25. Rd8+ Kxd8 26. axb4 e5 27. Kh1 e4 28. Rd1+ Kc7 29. Bxa7 e3 30. Bxe3 Kc6 31. Kg1 Kb5 32. Rd8 Kxb4 33. Rf8 Kc3 34. Rc8+ Kb4 35. Ra8 Kc3 36. Rc8+ Kb4 37. Kh1 Ka3 38. Bc5+ Kb2 39. h3 Kxc2 40. Bd6+ Kd3 41. Rc5 Kd4 42. Rc1 Ke3 43. Re1+ Kd4 44. Bf4 Kc3 45. Re5 Kd4 46. Ra5 Kc3 47. Kg1 Kd4 48. Bd2 Kc4 49. Kf1 Kd3 50. Ra2 Ke4 51. Bc3 Kd3 52. Ba1 Kc4 53. g4 Kd3 54. Rf2 Ke4 55. Bc3 Kd3 56. Ba5 Ke4 57. Bc7 Kd4 58. Rxf7 Ke3 59. h4 Kd4 60. Ke2 Kc3 61. Be5+ Kc4 62. Ke3 Kd5 63. Rf5 Ke6 64. Kf4 g5+ 65. hxg5 Kd5 66. Bb2+ Ke6 67. Be5 Kd5 68. Bh8+ Ke6 69. g6 hxg6 70. Rf8 g5+ 71. Ke4 Kd6 72. Ke3 Kd5 73. Kf3 Ke6 74. Ke3 Kd5 75. Rf6 Ke5 76. Rf7+ Kd5 77. Rf5+ Ke6 78. Rf6+ Kd5 79. Rf5+ Ke6 80. Rf6+ Kd5 81. Rf2 Ke6 82. Rf6+ 1/2-1/2
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "4"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces"]
+[Result "1-0"]
+[Opening "Sicilian, open with d6"]
+[Termination "checkmate"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Bb5+ Nc6 6. Nc3 Nxe4 7. Bxc6+ bxc6 8. Qf3 Nxf2 9. Kxf2 Qb6 10. Be3 Qxd4 11. Bxd4 Bg4 12. Qxc6+ Bd7 13. Qxa8+ Bc8 14. Qxc8# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "5"]
+[White "jev-v0"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "Sicilian, Alapin"]
+[Termination "checkmate"]
+
+1. e4 c5 2. c3 Nf6 3. Nf3 d6 4. d4 a6 5. d5 h6 6. e5 Ng4 7. Bxh6 Nxh6 8. exd6 e5 9. dxe6 Bxd6 10. Qxd6 Qxd6 11. Bb5+ axb5 12. exf7+ Nxf7 13. O-O Kf8 14. Nd4 Qxh2# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "5"]
+[White "jev:describe-pieces-no-board"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "Sicilian, Alapin"]
+[Termination "checkmate"]
+
+1. e4 c5 2. c3 Nf6 3. Nf3 Nc6 4. d4 cxd4 5. cxd4 d6 6. d5 Nb4 7. Nd4 e5 8. dxe6 d5 9. exf7+ Kxf7 10. exd5 Bc5 11. Qh5+ Nxh5 12. Ne6 Qe7 13. Bh6 Nc2+ 14. Kd2 a6 15. Kxc2 gxh6 16. Nxc5 Qxc5+ 17. Bc4 Qxc4+ 18. Nc3 Qxc3+ 19. Kxc3 Nf6 20. d6 Bg4 21. d7 Rhd8 22. Rhd1 Bxd7 23. Rxd7+ Rxd7 24. Rd1 Ne4+ 25. Kc4 Re7 26. Rd4 Nf6 27. Rd8 Ra7 28. Rf8+ Kg6 29. Rxf6+ Kxf6 30. Kd5 Re8 31. Kd6 a5 32. Kd7 Re1 33. b4 Ra1 34. bxa5 Ra8 35. Kc7 Re8 36. Kxb7 Rb1+ 37. Kc7 Rc1+ 38. Kd7 Rb8 39. a6 Re1 40. a7 Rb7+ 41. Kc8 Rxa7 42. Kd8 h5 43. Kc8 Re8# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "5"]
+[White "jev:describe-pieces"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "Sicilian, Alapin"]
+[Termination "checkmate"]
+
+1. e4 c5 2. c3 Nf6 3. Nf3 Nc6 4. d4 d5 5. exd5 Nxd5 6. dxc5 Bg4 7. Qxd5 Qxd5 8. Nd4 Qd7 9. Nxc6 Qd1# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "6"]
+[White "stockfish:skill=0"]
+[Black "jev-v0"]
+[Result "1-0"]
+[Opening "Sicilian, Alapin"]
+[Termination "checkmate"]
+
+1. e4 c5 2. c3 Nf6 3. e5 d5 4. exf6 gxf6 5. d4 cxd4 6. cxd4 Qa5+ 7. Nc3 Qxc3+ 8. bxc3 Nc6 9. Qf3 Nxd4 10. Qd3 Nc2+ 11. Qxc2 d4 12. Bd3 dxc3 13. Bb5+ Bd7 14. Qe2 Bxb5 15. Qxb5+ Kd8 16. Qd5+ Kc7 17. Rb1 c2 18. Rxb7+ Kc8 19. Qd7# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "6"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces-no-board"]
+[Result "1-0"]
+[Opening "Sicilian, Alapin"]
+[Termination "checkmate"]
+
+1. e4 c5 2. c3 Nf6 3. e5 Ne4 4. f3 Nxd2 5. Bxd2 d5 6. h4 d4 7. cxd4 Qxd4 8. Bb5+ Bd7 9. Qb3 Qxg1+ 10. Rxg1 Bxb5 11. Ba5 Ba6 12. Rh1 Bd3 13. Qa4+ Bb5 14. Qc2 Bc4 15. Nc3 Bxa2 16. e6 Bxe6 17. Qa4+ Bd7 18. Qe4 Be6 19. Nb5 Bd5 20. Nc7+ Kd7 21. Qg4+ Be6 22. Qa4+ Nc6 23. Qd1+ Nd4 24. Ra4 Bb3 25. Qxd4+ cxd4 26. Rxd4+ Kc6 27. Nxa8 Bd1 28. Rxd1 Kb5 29. Bc7 Kc6 30. Ke2 Kb5 31. b3 Kc6 32. Rc1+ Kd5 33. Rhd1+ Ke6 34. Bh2 Kf5 35. b4 b5 36. g4+ Kg6 37. h5+ Kg5 38. Rc5+ Kf6 39. Rf5+ Ke6 40. Nc7# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "6"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces"]
+[Result "1-0"]
+[Opening "Sicilian, Alapin"]
+[Termination "checkmate"]
+
+1. e4 c5 2. c3 Nf6 3. e5 Ne4 4. Qf3 Nxf2 5. Qxf2 d5 6. Be2 d4 7. d3 dxc3 8. bxc3 Qxd3 9. Bxd3 Nc6 10. Qe2 Nxe5 11. Bb5+ Bd7 12. Bxd7+ Nxd7 13. Be3 O-O-O 14. Bd2 Ne5 15. a3 Nd3+ 16. Kf1 Rd4 17. cxd4 cxd4 18. Qxd3 Kd7 19. g3 Ke6 20. h3 Kd5 21. Qf3+ Kc4 22. a4 d3 23. Na3+ Kd4 24. Qe3+ Kd5 25. Qxd3+ Ke5 26. Re1+ Kf6 27. Qf3+ Kg6 28. Qe4+ Kf6 29. Bc3+ Kg5 30. Qd5+ Kg6 31. Qe4+ Kg5 32. Nf3+ Kh5 33. g4+ Kh6 34. Bd2+ g5 35. h4 Rg8 36. hxg5+ Kg7 37. Qxh7# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "7"]
+[White "jev-v0"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "English, symmetrical"]
+[Termination "checkmate"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Nf3 d6 5. Bg2 h6 6. O-O Nf6 7. d4 cxd4 8. Nxd4 Qc7 9. Nxc6 bxc6 10. Bxc6+ Qxc6 11. Qxd6 exd6 12. Bxh6 Qb7 13. Bxf8 d5 14. Nxd5 Ng8 15. Nc7+ Kxf8 16. Nxa8 g5 17. c5 Bh3 18. Nc7 Qg2# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "7"]
+[White "jev:describe-pieces-no-board"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "English, symmetrical"]
+[Termination "checkmate"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Nf3 Bg7 5. Bg2 h6 6. O-O Rb8 7. Nd5 g5 8. Nxe7 Ngxe7 9. Nxg5 hxg5 10. Bxc6 Nxc6 11. Qb3 Na5 12. Qxb7 Bxb7 13. Rb1 g4 14. d4 O-O 15. dxc5 Bc6 16. Rd1 Bf3 17. exf3 gxf3 18. Rxd7 Qe8 19. Rxf7 Qe1# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "7"]
+[White "jev:describe-pieces"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "English, symmetrical"]
+[Termination "checkmate"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Nf3 d6 5. Bg2 Bg7 6. O-O Nh6 7. Nd5 O-O 8. Nxe7+ Nxe7 9. Ne5 Nhf5 10. Nxf7 Rxf7 11. Bxb7 Bxb7 12. d4 cxd4 13. Qxd4 Nxd4 14. Rd1 Nxe2+ 15. Kf1 d5 16. Kxe2 Nf5 17. cxd5 Re7+ 18. Be3 Ba6+ 19. Kd2 Qa5+ 20. Kc2 Qa4+ 21. Kd2 Qb4+ 22. Kc2 Rc8+ 23. Bc5 Rxc5+ 24. Kb1 Qe4+ 25. Rd3 Qe1+ 26. Rd1 Qe4+ 27. Rd3 Qh1+ 28. Rd1 Bd3# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "8"]
+[White "stockfish:skill=0"]
+[Black "jev-v0"]
+[Result "1-0"]
+[Opening "English, symmetrical"]
+[Termination "checkmate"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. Rb1 d5 6. Bxd5 Qxd5 7. cxd5 Bxc3 8. dxc3 Nd4 9. cxd4 cxd4 10. a3 d3 11. Bd2 dxe2 12. Qb3 Bh3 13. Nxh3 O-O-O 14. Rc1+ Kb8 15. Qc3 Rxd5 16. Qc8# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "8"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces-no-board"]
+[Result "1/2-1/2"]
+[Opening "English, symmetrical"]
+[Termination "threefold"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. b3 Bg7 5. Rb1 Nf6 6. d3 O-O 7. Nf3 d5 8. a3 dxc4 9. bxc4 Qxd3 10. Qxd3 Nd4 11. g4 Nxf3+ 12. exf3 Bxg4 13. Rb2 Bxf3 14. Rg1 Bd5 15. Qc2 Bxc4 16. f3 Bxf1 17. Na4 Bd3 18. Qxd3 Rfd8 19. Qb3 Rd1+ 20. Kxd1 Rd8+ 21. Bd2 Rxd2+ 22. Rxd2 Ne4 23. Rd8+ Bf8 24. fxe4 c4 25. Qxb7 c3 26. h3 c2+ 27. Kxc2 e5 28. Rxf8+ Kxf8 29. Qb8+ Ke7 30. Qxe5+ Kf8 31. h4 g5 32. Qc5+ Ke8 33. Qe5+ Kf8 34. Qd6+ Ke8 35. Qe5+ Kf8 1/2-1/2
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "8"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces"]
+[Result "1-0"]
+[Opening "English, symmetrical"]
+[Termination "checkmate"]
+
+1. c4 c5 2. Nc3 Nc6 3. g3 g6 4. b3 Bg7 5. Nf3 Nf6 6. Rb1 O-O 7. Bb2 d5 8. d3 dxc4 9. bxc4 Qxd3 10. exd3 Nd4 11. Bg2 Nxf3+ 12. Bxf3 Ne4 13. Na4 Nxg3 14. fxg3 Bc3+ 15. Bxc3 Rd8 16. Bb2 Rxd3 17. Qc1 Rxf3 18. Bc3 Rxc3 19. Qd1 Rxg3 20. Rb2 Rg1+ 21. Rxg1 Rb8 22. Rg3 Bh3 23. Rxh3 Rd8 24. Qxd8+ Kg7 25. Rhb3 b5 26. cxb5 c4 27. Rh3 c3 28. Nxc3 Kf6 29. Nd5+ Ke5 30. Re3+ Kd4 31. Rb4+ Kc5 32. Rc3# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "9"]
+[White "jev-v0"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "English, reversed Sicilian"]
+[Termination "checkmate"]
+
+1. c4 e5 2. Nc3 Nf6 3. d4 d6 4. dxe5 Nfd7 5. exd6 Bxd6 6. Qxd6 cxd6 7. Nd5 Nc5 8. Nc7+ Qxc7 9. e4 Nba6 10. Bd3 d5 11. cxd5 Kd8 12. Bxa6 bxa6 13. Bg5+ f6 14. Bxf6+ gxf6 15. O-O-O Nb7+ 16. Kd2 Qe7 17. Rc1 Qb4+ 18. Kc2 Qxe4+ 19. Kb3 Qd3+ 20. Rc3 Nc5+ 21. Kb4 Qe4+ 22. Kxc5 Qg4 23. Rg3 Qd7 24. Rg8+ Rxg8 25. Kd4 Qa4+ 26. Kc5 Qb5+ 27. Kd6 Qb6# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "9"]
+[White "jev:describe-pieces-no-board"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "English, reversed Sicilian"]
+[Termination "checkmate"]
+
+1. c4 e5 2. Nc3 Nf6 3. Nf3 Nc6 4. Nxe5 d5 5. cxd5 Nxe5 6. Qa4+ c6 7. Qxc6+ Nxc6 8. dxc6 b5 9. Nxb5 a6 10. Nc7+ Qxc7 11. d4 Bd6 12. d5 Nxd5 13. Be3 a5 14. O-O-O Nxe3 15. fxe3 Rb8 16. Rxd6 Qxd6 17. c7 Qc5+ 18. Kd2 Qxc7 19. e4 Rxb2+ 20. Ke3 Rxa2 21. Kd4 Rd2+ 22. Ke3 Qa7+ 23. Kxd2 Qd7+ 24. Ke3 Qa7+ 25. Kd2 Qf2 26. Rg1 Bd7 27. g3 Qxg1 28. Bg2 O-O 29. e5 a4 30. e6 Qxg2 31. exd7 Rd8 32. Ke3 Qg1+ 33. Kd2 Qg2 34. Ke3 a3 35. Kd4 Qf2+ 36. Kd5 Rxd7+ 37. Kc6 Re7 38. Kd5 Qxe2 39. Kc6 a2 40. Kd5 Qh5+ 41. Kc6 Qh6+ 42. Kd5 Re5+ 43. Kxe5 a1=Q+ 44. Kd5 Qa2+ 45. Kc5 Qh5+ 46. Kc6 Qf3+ 47. Kd7 Qad5+ 48. Kc7 Qb7+ 49. Kd6 Qfd5# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "9"]
+[White "jev:describe-pieces"]
+[Black "stockfish:skill=0"]
+[Result "0-1"]
+[Opening "English, reversed Sicilian"]
+[Termination "checkmate"]
+
+1. c4 e5 2. Nc3 Nf6 3. Nf3 e4 4. Nxe4 Nxe4 5. d4 Bb4+ 6. Bd2 Qe7 7. Bxb4 Qxb4+ 8. Qd2 Nxd2 9. Nxd2 a6 10. O-O-O Qb6 11. d5 h5 12. d6 cxd6 13. Ne4 Qc6 14. Nxd6+ Qxd6 15. Rxd6 Nc6 16. Rxc6 dxc6 17. c5 h4 18. g3 Be6 19. gxh4 Rd8 20. Bh3 Bxh3 21. Rd1 Rxd1+ 22. Kxd1 g6 23. e4 Rxh4 24. e5 Rh5 25. e6 Bg4+ 26. Kd2 Bxe6 27. Kc3 Rh3+ 28. Kd4 Rh4+ 29. Ke5 Rh5+ 30. Kd4 Rh8 31. Ke5 Rxh2 32. Kd6 Bxa2 33. Kc7 a5 34. Kxb7 f6 35. Kxc6 Bg8 36. Kb7 Rh4 37. c6 Rc4 38. c7 Be6 39. c8=Q+ Rxc8 40. Kb6 Rb8+ 41. Kxa5 Rxb2 42. f3 Bd5 43. f4 Kd7 44. f5 Rb3 45. fxg6 Rb8 46. g7 Kd6 47. g8=Q Rxg8 48. Kb6 Rg3 49. Ka5 Kc5 50. Ka6 Ra3# 0-1
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "10"]
+[White "stockfish:skill=0"]
+[Black "jev-v0"]
+[Result "1-0"]
+[Opening "English, reversed Sicilian"]
+[Termination "checkmate"]
+
+1. c4 e5 2. Nc3 Nf6 3. a3 d5 4. Nxd5 Nxd5 5. d4 exd4 6. cxd5 Qxd5 7. Nf3 Qxf3 8. gxf3 Bb4+ 9. axb4 O-O 10. b3 Nc6 11. f4 Ne5 12. fxe5 b5 13. e3 dxe3 14. fxe3 c5 15. Qe2 cxb4 16. Qd2 Ba6 17. Rxa6 Rfd8 18. Qe2 Rd1+ 19. Kf2 Rxf1+ 20. Rxf1 Rd8 21. h3 Rd2 22. Qxd2 f5 23. Qd8+ Kf7 24. Qd7+ Kf8 25. Qc8+ Kf7 26. Qc7+ Kf8 27. Qc8+ Kf7 28. Qb7+ Kf8 29. Qb8+ Kf7 30. Qxa7+ Kf8 31. Qb8+ Kf7 32. Qb7+ Kf8 33. Ra8# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "10"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces-no-board"]
+[Result "1-0"]
+[Opening "English, reversed Sicilian"]
+[Termination "checkmate"]
+
+1. c4 e5 2. Nc3 Nf6 3. e3 Nc6 4. d4 exd4 5. exd4 Nxd4 6. Qxd4 Nd5 7. Qxd5 Qe7+ 8. Kd1 Qe1+ 9. Kxe1 Ba3 10. Qe5+ Be7 11. Nd5 O-O 12. Nxe7+ Kh8 13. Qxc7 d5 14. Be3 dxc4 15. Qxc4 Re8 16. Qxf7 Rxe7 17. Qf8# 1-0
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "10"]
+[White "stockfish:skill=0"]
+[Black "jev:describe-pieces"]
+[Result "1-0"]
+[Opening "English, reversed Sicilian"]
+[Termination "checkmate"]
+
+1. c4 e5 2. Nc3 Nf6 3. Nf3 Nc6 4. a3 Bxa3 5. bxa3 O-O 6. g3 Nd4 7. a4 Nxf3+ 8. exf3 d5 9. cxd5 Qxd5 10. Ba3 Qxd2+ 11. Kxd2 Rd8+ 12. Ke3 Rxd1 13. Nxd1 Nd5+ 14. Kd2 Ne3 15. fxe3 e4 16. Be7 exf3 17. h3 Bxh3 18. Rxh3 Rd8+ 19. Kc2 Rd2+ 20. Kxd2 f2 21. Nxf2 b5 22. Rb1 bxa4 23. Rb8# 1-0

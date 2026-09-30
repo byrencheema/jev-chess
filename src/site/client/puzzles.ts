@@ -55,7 +55,7 @@ export function mountPuzzles(root: HTMLElement, data: SiteData) {
 <p class="pd-alt"></p>
 <p class="pd-link"></p>`;
   const board = new Board(detail.querySelector<HTMLElement>(".pd-board")!);
-  const cells = Array.from(waffle.querySelectorAll<HTMLElement>(".cell"));
+  const cells = new Map(Array.from(waffle.querySelectorAll<HTMLElement>(".cell")).map((c) => [Number(c.dataset.p), c]));
   let sel = -1;
   let step = 0;
 
@@ -98,12 +98,13 @@ export function mountPuzzles(root: HTMLElement, data: SiteData) {
 
   const select = (i: number, focus = false) => {
     if (i < 0 || i >= puzzles.length) return;
-    cells[sel]?.classList.remove("sel");
-    cells[sel]?.setAttribute("tabindex", "-1");
-    cells[sel]?.setAttribute("aria-selected", "false");
+    const prev = cells.get(sel);
+    prev?.classList.remove("sel");
+    prev?.setAttribute("tabindex", "-1");
+    prev?.setAttribute("aria-selected", "false");
     sel = i;
     step = 0;
-    const c = cells[i]!;
+    const c = cells.get(i)!;
     c.classList.add("sel");
     c.setAttribute("tabindex", "0");
     c.setAttribute("aria-selected", "true");

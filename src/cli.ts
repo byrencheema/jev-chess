@@ -102,6 +102,7 @@ async function evalCmd(args: string[]) {
   if (!values.b) throw new Error("--b is required");
   const out = values.out ?? `results/raw/${slug(values.a!)}_vs_${slug(values.b)}.jsonl`;
   const eng = await engines([values.a!, values.b]);
+  const tokens = new Map<string, number>();
   console.log(`${bold(values.a!)} vs ${bold(values.b)}, ${values.games} games${values.book ? `, openings from a ${OPENINGS.length}-line book` : ""} -> ${out}`);
   await runMatch({
     a: values.a!,
@@ -115,7 +116,12 @@ async function evalCmd(args: string[]) {
     out,
     engines: eng,
     deps: { jev: sharedJev({ model: values.model, baseUrl: values["base-url"] }) },
-    onMove: values.verbose ? (id, m) => console.log(dim(`[${id}]`), formatMove(m, 0)) : undefined,
+    onMove: values.verbose
+      ? (id, m) => {
+          tokens.set(id, (tokens.get(id) ?? 0) + (m.inputTokens ?? 0));
+          console.log(dim(`[${id}]`), formatMove(m, costUsd(tokens.get(id)!)));
+        }
+      : undefined,
     onGame: (r, spent) =>
       console.log(`#${r.index} ${r.white} - ${r.black}  ${bold(r.result)} ${r.termination} in ${r.plies} plies  ${dim(`${r.jevCalls} calls, ${formatUsd(r.costUsd)}, run total ${formatUsd(spent)}`)}${r.error ? ` error: ${r.error}` : ""}`),
   });

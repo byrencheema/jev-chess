@@ -7,7 +7,6 @@
     "eval": "bun src/cli.ts eval",
     "puzzles": "bun src/cli.ts puzzles",
     "analyze": "bun src/cli.ts analyze",
-    "site": "bun src/site/build.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

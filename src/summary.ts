@@ -2,6 +2,7 @@ import type { MoveLog } from "./game.ts";
 import type { PuzzleResult } from "./puzzles.ts";
 import { bootstrapRating } from "./rating.ts";
 import { latestById, type GameRow } from "./runner.ts";
+import { mulberry32 } from "./rng.ts";
 import { costUsd, formatUsd, median, wilson } from "./stats.ts";
 
 function pct(x: number): string {
@@ -83,5 +84,43 @@ export function puzzleSummary(all: PuzzleResult[]): string {
   const tokens = rows.reduce((s, r) => s + r.inputTokens, 0);
   const models = [...new Set(rows.map((r) => r.model).filter(Boolean))].join(", ");
   lines.push(`  jev: ${callStats(rows.flatMap((r) => r.steps))}`, `  ${tokens.toLocaleString()} input tokens, ${formatUsd(costUsd(tokens))}${models ? `, model ${models}` : ""}`);
+  return lines.join("\n");
+}
+
+export interface Named {
+  name: string;
+  rows: PuzzleResult[];
+}
+
+export function pairedDiff(base: Map<string, boolean>, other: Map<string, boolean>, samples = 2000, seed = 1): { diff: number; low: number; high: number; n: number } {
+  const ids = [...other.keys()].filter((id) => base.has(id));
+  const d = ids.map((id) => Number(other.get(id)) - Number(base.get(id)));
+  const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+  const rng = mulberry32(seed);
+  const boots: number[] = [];
+  for (let s = 0; s < samples; s++) boots.push(mean(Array.from({ length: d.length }, () => d[Math.floor(rng() * d.length)]!)));
+  return { diff: mean(d), low: quantile(boots, 0.025), high: quantile(boots, 0.975), n: ids.length };
+}
+
+export function compareTable(baseline: Named, variants: Named[]): string {
+  const solvedMap = (rows: PuzzleResult[]) => new Map(rows.filter((r) => !r.error).map((r) => [r.id, r.solved]));
+  const base = solvedMap(baseline.rows);
+  const signed = (x: number) => `${x >= 0 ? "+" : ""}${(x * 100).toFixed(1)}`;
+  const lines = [
+    "| Variant | Puzzles | Solved | 95% CI | Fitted rating (95% CI) | vs baseline, points (95% CI) | Tokens per call | Cost |",
+    "|---|---|---|---|---|---|---|---|",
+  ];
+  for (const v of variants) {
+    const rows = v.rows.filter((r) => !r.error);
+    const solved = rows.filter((r) => r.solved).length;
+    const ci = wilson(solved, rows.length);
+    const fit = bootstrapRating(rows.map((r) => ({ rating: r.rating, solved: r.solved })));
+    const d = pairedDiff(base, solvedMap(rows));
+    const calls = rows.reduce((s, r) => s + r.jevCalls, 0);
+    const tokens = rows.reduce((s, r) => s + r.inputTokens, 0);
+    lines.push(
+      `| ${v.name} | ${rows.length} | ${pct(solved / rows.length)} | ${pct(ci.low)} to ${pct(ci.high)} | ${fit.rating.toFixed(0)} (${fit.low.toFixed(0)} to ${fit.high.toFixed(0)}) | ${v.name === baseline.name ? "baseline" : `${signed(d.diff)} (${signed(d.low)} to ${signed(d.high)})`} | ${calls ? Math.round(tokens / calls) : "-"} | ${formatUsd(costUsd(tokens))} |`,
+    );
+  }
   return lines.join("\n");
 }

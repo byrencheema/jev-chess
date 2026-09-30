@@ -3,8 +3,6 @@ import { dirname } from "node:path";
 import { makeAgent, type AgentDeps } from "./agents.ts";
 import { playGame, type GameRecord, type MoveLog } from "./game.ts";
 import { openingFor } from "./openings.ts";
-import { INSTRUCTIONS } from "./prompt.ts";
-import { hashString } from "./rng.ts";
 
 export interface GameRow extends GameRecord {
   id: string;
@@ -14,7 +12,7 @@ export interface GameRow extends GameRecord {
   aColor: "white" | "black";
   scoreA: number | null;
   seed: number;
-  prompt: string;
+  prompts: Record<string, string>;
   engines: Record<string, string>;
   startedAt: string;
 }
@@ -46,7 +44,16 @@ export async function pool<T>(items: T[], concurrency: number, fn: (item: T) => 
   await Promise.all(Array.from({ length: Math.max(1, Math.min(concurrency, items.length)) }, worker));
 }
 
-export const PROMPT_ID = hashString(INSTRUCTIONS).toString(16);
+export const MAX_ERROR_RATE = 0.02;
+export const MIN_FOR_ERROR_RATE = 25;
+
+export function tooManyErrors(errors: number, finished: number): boolean {
+  return finished >= MIN_FOR_ERROR_RATE && errors / finished > MAX_ERROR_RATE;
+}
+
+export function promptsOf(...agents: { name: string; prompt?: string }[]): Record<string, string> {
+  return Object.fromEntries(agents.filter((a) => a.prompt).map((a) => [a.name, a.prompt!]));
+}
 
 export function scoreFor(result: string, aColor: "white" | "black"): number | null {
   if (result === "1/2-1/2") return 0.5;
@@ -84,6 +91,9 @@ export async function runMatch(opts: MatchOptions): Promise<GameRow[]> {
   }
   const rows: GameRow[] = [];
   let spent = 0;
+  let errors = 0;
+  let finished = 0;
+  let stopped = "";
   await pool(
     todo,
     opts.concurrency,
@@ -111,7 +121,7 @@ export async function runMatch(opts: MatchOptions): Promise<GameRow[]> {
           aColor,
           scoreA: scoreFor(game.result, aColor),
           seed: opts.seed,
-          prompt: PROMPT_ID,
+          prompts: promptsOf(white, black),
           engines: opts.engines ?? {},
           startedAt,
           ...game,
@@ -119,12 +129,19 @@ export async function runMatch(opts: MatchOptions): Promise<GameRow[]> {
         appendJsonl(opts.out, row);
         rows.push(row);
         spent += game.costUsd;
+        finished++;
+        if (game.error) errors++;
         opts.onGame?.(row, spent);
       } finally {
         await Promise.all([white.close?.(), black.close?.()]);
       }
     },
-    () => opts.budgetUsd !== undefined && spent >= opts.budgetUsd,
+    () => {
+      if (opts.budgetUsd !== undefined && spent >= opts.budgetUsd) stopped = `budget of $${opts.budgetUsd} reached`;
+      else if (tooManyErrors(errors, finished)) stopped = `${errors} errors in ${finished} games`;
+      return stopped !== "";
+    },
   );
+  if (stopped) console.error(`stopped early: ${stopped}`);
   return rows;
 }

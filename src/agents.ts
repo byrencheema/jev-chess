@@ -1,8 +1,8 @@
 import { Chess } from "chess.js";
 import { LC0_PATH, MAIA_DIR, STOCKFISH_PATH, jevConfig, type JevOptions } from "./config.ts";
-import { JevClient } from "./jev.ts";
-import { INSTRUCTIONS, stateVariants, type Position } from "./prompt.ts";
-import { seeded, type Rng } from "./rng.ts";
+import { JevClient, type ChoiceQuestion, type Criterion } from "./jev.ts";
+import { describeMove, HEADLINE, promptId, renderState, VARIANTS, X3_STATES, type Position, type PromptVariant } from "./prompt.ts";
+import { seeded, shuffle, type Rng } from "./rng.ts";
 import { Engine, type Score, type SearchLimits } from "./uci.ts";
 
 export interface Decision {
@@ -23,6 +23,7 @@ export interface Decision {
 export interface Agent {
   name: string;
   kind: "jev" | "random" | "stockfish" | "maia";
+  prompt?: string;
   choose(pos: Position): Promise<Decision>;
   close?(): Promise<void>;
 }
@@ -40,34 +41,106 @@ function forced(san: string): Decision {
   return { san, calls: 0, inputTokens: 0, latencyMs: 0, forced: true };
 }
 
+export interface JevRead {
+  probabilities: Record<string, number>;
+  choice: string;
+  confidence: number;
+  inputTokens: number;
+  latencyMs: number;
+  requestMs: number;
+  model?: string;
+  stateVariant: number;
+  invalid?: string;
+}
+
+export async function askJev(client: JevClient, variant: PromptVariant, pos: Position): Promise<JevRead> {
+  const moves = variant.shuffle ? shuffle(pos.moves, seeded(`order:${pos.fen}`)) : pos.moves;
+  const sanOf = new Map(moves.map((m) => [variant.keys === "uci" ? m.uci : m.san, m.san]));
+  const criteria: Record<string, Criterion> = {};
+  for (const m of moves) criteria[variant.keys === "uci" ? m.uci : m.san] = variant.describe ? describeMove(m) : null;
+  const questions: Record<string, ChoiceQuestion> = {};
+  variant.instructions.forEach((instructions, i) => (questions[`q${i}`] = { type: "choice", instructions, criteria }));
+  const r = await client.ask(renderState(pos, variant.state), questions);
+  const answers = Object.values(r.answers);
+  const probabilities: Record<string, number> = {};
+  let invalid: string | undefined;
+  for (const a of answers) {
+    for (const [key, p] of Object.entries(a.probabilities)) {
+      const san = sanOf.get(key);
+      if (san) probabilities[san] = (probabilities[san] ?? 0) + p / answers.length;
+    }
+    if (!sanOf.has(a.choice)) invalid = a.choice;
+  }
+  const single = answers.length === 1 ? sanOf.get(answers[0]!.choice) : undefined;
+  const choice = single ?? topProbabilities(probabilities, 1)[0]?.move ?? pos.legal[0]!;
+  const confidence = answers.reduce((c, a) => c + a.confidence, 0) / answers.length;
+  return { probabilities, choice, confidence, inputTokens: r.inputTokens, latencyMs: r.latencyMs, requestMs: r.requestMs, model: r.model, stateVariant: r.stateVariant, invalid };
+}
+
+function decisionFrom(r: JevRead, calls: number): Decision {
+  return {
+    san: r.choice,
+    calls,
+    inputTokens: r.inputTokens,
+    latencyMs: r.latencyMs,
+    requestMs: r.requestMs,
+    top: topProbabilities(r.probabilities),
+    confidence: r.confidence,
+    model: r.model,
+    stateVariant: r.stateVariant,
+    invalid: r.invalid,
+  };
+}
+
 export class JevAgent implements Agent {
   readonly kind = "jev";
-  readonly name = "jev";
 
-  constructor(readonly client: JevClient) {}
+  constructor(
+    readonly client: JevClient,
+    readonly variant: PromptVariant = VARIANTS[HEADLINE]!,
+    readonly name = "jev",
+  ) {}
+
+  get prompt(): string {
+    return promptId(this.variant);
+  }
 
   async choose(pos: Position): Promise<Decision> {
     if (pos.legal.length === 1) return forced(pos.legal[0]!);
-    const c = await this.client.choose(stateVariants(pos), INSTRUCTIONS, pos.legal);
-    const top = topProbabilities(c.probabilities);
-    let san = c.choice;
-    let invalid: string | undefined;
-    if (!pos.legal.includes(san)) {
-      invalid = san;
-      san = topProbabilities(c.probabilities, Infinity).find((t) => pos.legal.includes(t.move))?.move ?? pos.legal[0]!;
-    }
-    return {
-      san,
-      calls: 1,
-      inputTokens: c.inputTokens,
-      latencyMs: c.latencyMs,
-      requestMs: c.requestMs,
-      top,
-      confidence: c.confidence,
-      model: c.model,
-      stateVariant: c.stateVariant,
-      invalid,
+    return decisionFrom(await askJev(this.client, this.variant, pos), 1);
+  }
+}
+
+export class JevEnsembleAgent implements Agent {
+  readonly kind = "jev";
+
+  constructor(
+    readonly client: JevClient,
+    readonly variants: PromptVariant[],
+    readonly name: string,
+  ) {}
+
+  get prompt(): string {
+    return this.variants.map(promptId).join("+");
+  }
+
+  async choose(pos: Position): Promise<Decision> {
+    if (pos.legal.length === 1) return forced(pos.legal[0]!);
+    const reads = await Promise.all(this.variants.map((v) => askJev(this.client, v, pos)));
+    const probabilities: Record<string, number> = {};
+    for (const r of reads) for (const [san, p] of Object.entries(r.probabilities)) probabilities[san] = (probabilities[san] ?? 0) + p / reads.length;
+    const merged: JevRead = {
+      probabilities,
+      choice: topProbabilities(probabilities, 1)[0]?.move ?? pos.legal[0]!,
+      confidence: reads.reduce((c, r) => c + r.confidence, 0) / reads.length,
+      inputTokens: reads.reduce((t, r) => t + r.inputTokens, 0),
+      latencyMs: Math.max(...reads.map((r) => r.latencyMs)),
+      requestMs: Math.max(...reads.map((r) => r.requestMs)),
+      model: reads[0]!.model,
+      stateVariant: Math.max(...reads.map((r) => r.stateVariant)),
+      invalid: reads.find((r) => r.invalid)?.invalid,
     };
+    return decisionFrom(merged, reads.length);
   }
 }
 
@@ -171,8 +244,19 @@ export interface AgentDeps {
 export function makeAgent(spec: string, deps: AgentDeps = {}): Agent {
   const [kind, params] = spec.split(/:(.*)/s) as [string, string | undefined];
   switch (kind) {
-    case "jev":
-      return new JevAgent(deps.jev?.() ?? new JevClient(jevConfig()));
+    case "jev": {
+      const client = deps.jev?.() ?? new JevClient(jevConfig());
+      if (!params) return new JevAgent(client);
+      const v = VARIANTS[params];
+      if (!v) throw new Error(`unknown jev variant ${params}; one of ${Object.keys(VARIANTS).join(", ")}`);
+      return new JevAgent(client, v, spec);
+    }
+    case "jev-v0":
+      return new JevAgent(deps.jev?.() ?? new JevClient(jevConfig()), VARIANTS.v0!, "jev-v0");
+    case "jev-x3": {
+      const base = VARIANTS[HEADLINE]!;
+      return new JevEnsembleAgent(deps.jev?.() ?? new JevClient(jevConfig()), X3_STATES.map((state, i) => ({ ...base, name: `x3-${i}`, state })), "jev-x3");
+    }
     case "random":
       return new RandomAgent(`${params ?? "0"}:${deps.seed ?? ""}`);
     case "stockfish":
@@ -180,7 +264,7 @@ export function makeAgent(spec: string, deps: AgentDeps = {}): Agent {
     case "maia":
       return new EngineAgent("maia", spec, maiaSpec(params));
     default:
-      throw new Error(`unknown agent ${spec}; use jev, random[:seed], stockfish[:elo|skill=N,movetime=ms,nodes=N,depth=N] or maia:1100|1500|1900`);
+      throw new Error(`unknown agent ${spec}; use jev, jev-v0, jev-x3, jev:<variant>, random[:seed], stockfish[:elo|skill=N,movetime=ms,nodes=N,depth=N] or maia:1100|1500|1900`);
   }
 }
 

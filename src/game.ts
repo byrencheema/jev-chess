@@ -47,6 +47,7 @@ export function positionOf(chess: Chess, startFen: string, history: string[]): P
     history: [...history],
     startFen,
     legal: chess.moves(),
+    moves: chess.moves({ verbose: true }).map((m) => ({ san: m.san, uci: m.lan, piece: m.piece, from: m.from, to: m.to, captured: m.captured, promotion: m.promotion, flags: m.flags })),
   };
 }
 

@@ -1,10 +1,13 @@
 import type { JevConfig } from "./config.ts";
 import { RateLimiter } from "./ratelimit.ts";
 
+export type Instructions = string | Record<string, unknown> | unknown[];
+export type Criterion = string | Record<string, unknown> | null;
+
 export type ChoiceQuestion = {
   type: "choice";
-  instructions: string;
-  criteria: Record<string, string | null>;
+  instructions: Instructions;
+  criteria: Record<string, Criterion>;
 };
 export type NoulQuestion = { type: "noul"; instructions: string };
 export type ScoreQuestion = { type: "score"; instructions: string; [k: string]: unknown };
@@ -22,6 +25,15 @@ export interface SystemOneResponse {
   model: string;
   answers: Record<string, Answer>;
   usage?: { input_tokens?: number; output_tokens?: number };
+}
+
+export interface Asked {
+  answers: Record<string, ChoiceAnswer>;
+  inputTokens: number;
+  latencyMs: number;
+  requestMs: number;
+  model?: string;
+  stateVariant: number;
 }
 
 export class JevError extends Error {
@@ -86,7 +98,7 @@ export class JevClient {
     this.retries.set(reason, (this.retries.get(reason) ?? 0) + 1);
   }
 
-  async systemOne(state: string, questions: Record<string, Question>): Promise<SystemOneResponse & { requestMs: number }> {
+  async systemOne(state: unknown, questions: Record<string, Question>): Promise<SystemOneResponse & { requestMs: number }> {
     const body = JSON.stringify({ model: this.config.model, state, questions });
     for (let attempt = 0; ; attempt++) {
       await this.limiter?.wait();
@@ -133,20 +145,19 @@ export class JevClient {
     }
   }
 
-  async choose(states: string[], instructions: string, options: string[]): Promise<Choice> {
-    const criteria: Record<string, string | null> = {};
-    for (const o of options) criteria[o] = null;
-    const question: ChoiceQuestion = { type: "choice", instructions, criteria };
+  async ask(states: unknown[], questions: Record<string, ChoiceQuestion>): Promise<Asked> {
     for (let i = 0; i < states.length; i++) {
       const t0 = performance.now();
       try {
-        const res = await this.systemOne(states[i]!, { next: question });
-        const answer = res.answers.next;
-        if (!answer || answer.type !== "choice") throw new JevError("systemone returned no choice answer", 200);
+        const res = await this.systemOne(states[i]!, questions);
+        const answers: Record<string, ChoiceAnswer> = {};
+        for (const id of Object.keys(questions)) {
+          const a = res.answers[id];
+          if (!a || a.type !== "choice") throw new JevError("systemone returned no choice answer", 200);
+          answers[id] = a;
+        }
         return {
-          choice: answer.choice,
-          probabilities: answer.probabilities,
-          confidence: answer.confidence,
+          answers,
           inputTokens: res.usage?.input_tokens ?? 0,
           latencyMs: performance.now() - t0,
           requestMs: res.requestMs,
@@ -159,5 +170,13 @@ export class JevClient {
       }
     }
     throw new JevError("no state variants given", 0);
+  }
+
+  async choose(states: unknown[], instructions: Instructions, options: string[]): Promise<Choice> {
+    const criteria: Record<string, Criterion> = {};
+    for (const o of options) criteria[o] = null;
+    const r = await this.ask(states, { next: { type: "choice", instructions, criteria } });
+    const answer = r.answers.next!;
+    return { choice: answer.choice, probabilities: answer.probabilities, confidence: answer.confidence, ...r };
   }
 }

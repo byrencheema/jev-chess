@@ -48,6 +48,17 @@ export interface SampleOptions {
 
 export const DEFAULT_SAMPLE: SampleOptions = { seed: 1, perBand: 5, band: 100, minRating: 600, maxRating: 2600, maxRd: 80, minPlays: 500 };
 
+export interface PuzzleSet {
+  sample: Partial<SampleOptions>;
+  dir: string;
+  exclude?: string;
+}
+
+export const PUZZLE_SETS: Record<string, PuzzleSet> = {
+  eval: { sample: { seed: 1, perBand: 50 }, dir: "results/raw" },
+  dev: { sample: { seed: 2, perBand: 15 }, dir: "results/dev", exclude: "eval" },
+};
+
 export function bandOf(rating: number, band: number): number {
   return Math.floor(rating / band) * band;
 }
@@ -57,11 +68,15 @@ export class Sampler {
   seen = 0;
   eligible = 0;
 
-  constructor(readonly opts: SampleOptions) {}
+  constructor(
+    readonly opts: SampleOptions,
+    readonly exclude: Set<string> = new Set(),
+  ) {}
 
   add(p: Puzzle) {
     this.seen++;
     const o = this.opts;
+    if (this.exclude.has(p.id)) return;
     if (!(p.rd < o.maxRd && p.plays > o.minPlays && p.rating >= o.minRating && p.rating < o.maxRating)) return;
     this.eligible++;
     const b = bandOf(p.rating, o.band);
@@ -84,12 +99,12 @@ export function samplePath(o: SampleOptions): string {
   return `data/puzzles-seed${o.seed}-${o.minRating}-${o.maxRating}-band${o.band}x${o.perBand}-rd${o.maxRd}-plays${o.minPlays}.json`;
 }
 
-export async function samplePuzzles(o: SampleOptions, db = PUZZLE_DB): Promise<Puzzle[]> {
-  const cached = samplePath(o);
+export async function samplePuzzles(o: SampleOptions, exclude: Puzzle[] = [], db = PUZZLE_DB): Promise<Puzzle[]> {
+  const cached = exclude.length ? samplePath(o).replace(/\.json$/, `-excluding${hashString(exclude.map((p) => p.id).join()).toString(16)}.json`) : samplePath(o);
   if (existsSync(cached)) return JSON.parse(readFileSync(cached, "utf8")) as Puzzle[];
   if (!existsSync(db)) throw new Error(`${db} not found; download https://database.lichess.org/lichess_db_puzzle.csv.zst`);
   const proc = Bun.spawn(["zstd", "-dc", db], { stdout: "pipe" });
-  const sampler = new Sampler(o);
+  const sampler = new Sampler(o, new Set(exclude.map((p) => p.id)));
   await readLines(proc.stdout, (l) => {
     const p = parsePuzzle(l);
     if (p) sampler.add(p);
@@ -120,6 +135,7 @@ export interface PuzzleResult {
   jevCalls: number;
   inputTokens: number;
   model?: string;
+  prompt?: string;
   error?: string;
 }
 
@@ -186,6 +202,7 @@ export async function solvePuzzle(agent: Agent, p: Puzzle): Promise<PuzzleResult
     jevCalls,
     inputTokens,
     model,
+    prompt: agent.prompt,
     error,
   };
 }

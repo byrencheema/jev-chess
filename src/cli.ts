@@ -6,10 +6,10 @@ import { analyzeMoves, Evaluator, summarize, type GameAnalysis } from "./analysi
 import { LC0_PATH, STOCKFISH_PATH } from "./config.ts";
 import type { MoveLog } from "./game.ts";
 import { OPENINGS } from "./openings.ts";
-import { DEFAULT_SAMPLE, samplePuzzles, solvePuzzle, type PuzzleResult } from "./puzzles.ts";
-import { appendJsonl, latestById, pool, readJsonl, runMatch, type GameRow } from "./runner.ts";
+import { DEFAULT_SAMPLE, PUZZLE_SETS, samplePuzzles, solvePuzzle, type PuzzleResult } from "./puzzles.ts";
+import { appendJsonl, latestById, pool, readJsonl, runMatch, tooManyErrors, type GameRow } from "./runner.ts";
 import { costUsd, formatUsd } from "./stats.ts";
-import { gameSummary, puzzleSummary } from "./summary.ts";
+import { compareTable, gameSummary, puzzleSummary } from "./summary.ts";
 import { Engine, engineName } from "./uci.ts";
 
 const tty = process.stdout.isTTY;
@@ -19,6 +19,8 @@ const bold = (s: string) => (tty ? `\x1b[1m${s}\x1b[0m` : s);
 const USAGE = `usage:
   bun run play --white jev --black stockfish:1320 [--book] [--seed N] [--max-plies N] [--out file]
   bun run eval --a jev --b stockfish:1320 --games N [--concurrency N] [--book] [--seed N] [--budget usd] [--out file]
+  bun run puzzles --set dev|eval [--agent jev] [--budget usd] [--quiet]
+  bun src/cli.ts compare --baseline <puzzles.jsonl> <puzzles.jsonl>... [--out table.md]
   bun run puzzles [--agent jev] [--per-band 5] [--band 100] [--min 600] [--max 2600] [--seed 1] [--concurrency N] [--budget usd] [--out file]
   bun run analyze <results/raw/file.jsonl> [--depth 14] [--player jev] [--out file]
   bun src/cli.ts summary <file.jsonl>...
@@ -142,11 +144,15 @@ async function puzzles(args: string[]) {
       max: { type: "string" },
       "max-rd": { type: "string" },
       "min-plays": { type: "string" },
+      set: { type: "string" },
+      quiet: { type: "boolean", default: false },
     },
   });
-  const d = DEFAULT_SAMPLE;
+  const set = values.set ? PUZZLE_SETS[values.set] : undefined;
+  if (values.set && !set) throw new Error(`--set is one of ${Object.keys(PUZZLE_SETS).join(", ")}`);
+  const d = { ...DEFAULT_SAMPLE, ...set?.sample };
   const opts = {
-    seed: Number(values.seed),
+    seed: Number(set ? d.seed : values.seed),
     perBand: Number(values["per-band"] ?? d.perBand),
     band: Number(values.band ?? d.band),
     minRating: Number(values.min ?? d.minRating),
@@ -155,15 +161,19 @@ async function puzzles(args: string[]) {
     minPlays: Number(values["min-plays"] ?? d.minPlays),
   };
   const t0 = performance.now();
-  const sample = await samplePuzzles(opts);
-  console.log(dim(`${sample.length} puzzles sampled in ${((performance.now() - t0) / 1000).toFixed(1)}s`));
-  const out = values.out ?? `results/raw/puzzles-${slug(values.agent!)}-seed${opts.seed}-${opts.minRating}-${opts.maxRating}x${opts.perBand}.jsonl`;
+  const exclude = set?.exclude ? await samplePuzzles({ ...DEFAULT_SAMPLE, ...PUZZLE_SETS[set.exclude]!.sample }) : [];
+  const sample = await samplePuzzles(opts, exclude);
+  console.log(dim(`${sample.length} puzzles sampled in ${((performance.now() - t0) / 1000).toFixed(1)}s${exclude.length ? `, none of the ${exclude.length} ${set!.exclude} puzzles` : ""}`));
+  const out =
+    values.out ??
+    (set ? `${set.dir}/puzzles-${values.set}-${slug(values.agent!)}.jsonl` : `results/raw/puzzles-${slug(values.agent!)}-seed${opts.seed}-${opts.minRating}-${opts.maxRating}x${opts.perBand}.jsonl`);
   const done = latestById(readJsonl<PuzzleResult>(out));
   const todo = sample.filter((p) => !done.get(p.id) || done.get(p.id)!.error);
   const jev = sharedJev({ model: values.model, baseUrl: values["base-url"] });
   const budget = values.budget ? Number(values.budget) : Infinity;
   let spent = 0;
   let n = 0;
+  let errors = 0;
   await pool(
     todo,
     Number(values.concurrency),
@@ -174,15 +184,18 @@ async function puzzles(args: string[]) {
         appendJsonl(out, { ...r, agent: values.agent, seed: opts.seed });
         spent += costUsd(r.inputTokens);
         n++;
+        if (r.error) errors++;
+        if (values.quiet && !r.error) return;
         const line = r.steps.map((s) => (s.correct ? s.san : `${s.san} (want ${s.expectedSan})`)).join(" ");
         console.log(`${String(n).padStart(4)} ${p.id} ${String(p.rating).padStart(4)} ${r.solved ? bold("solved") : "failed"}  ${line}  ${dim(`total ${formatUsd(spent)}`)}${r.error ? ` error: ${r.error}` : ""}`);
       } finally {
         await agent.close?.();
       }
     },
-    () => spent >= budget,
+    () => spent >= budget || tooManyErrors(errors, n),
   );
-  console.log(puzzleSummary(readJsonl<PuzzleResult>(out)));
+  if (spent >= budget || tooManyErrors(errors, n)) console.error(`stopped early: ${formatUsd(spent)} spent, ${errors} errors in ${n} puzzles`);
+  console.log(`${out}\n${puzzleSummary(readJsonl<PuzzleResult>(out))}`);
 }
 
 async function analyze(args: string[]) {
@@ -217,6 +230,19 @@ async function analyze(args: string[]) {
   );
 }
 
+async function compare(args: string[]) {
+  const { values, positionals } = parseArgs({ args, allowPositionals: true, options: { baseline: { type: "string" }, out: { type: "string" } } });
+  const files = positionals;
+  if (!values.baseline || files.length === 0) throw new Error("usage: compare --baseline <file> <files...> [--out table.md]");
+  const load = (f: string) => ({ name: basename(f, ".jsonl"), rows: [...latestById(readJsonl<PuzzleResult>(f)).values()] });
+  const table = compareTable(load(values.baseline), files.map(load));
+  console.log(table);
+  if (values.out) {
+    mkdirSync(dirname(values.out), { recursive: true });
+    writeFileSync(values.out, `${table}\n`);
+  }
+}
+
 async function pgn(args: string[]) {
   for (const file of args) {
     const rows = [...latestById(readJsonl<GameRow>(file)).values()].sort((a, b) => a.index - b.index);
@@ -236,7 +262,7 @@ async function summary(args: string[]) {
 }
 
 const [cmd, ...rest] = Bun.argv.slice(2);
-const commands: Record<string, (args: string[]) => Promise<void>> = { play, eval: evalCmd, puzzles, analyze, pgn, summary };
+const commands: Record<string, (args: string[]) => Promise<void>> = { play, eval: evalCmd, puzzles, analyze, compare, pgn, summary };
 const run = cmd ? commands[cmd] : undefined;
 if (!run) {
   console.error(USAGE);

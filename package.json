@@ -1,0 +1,19 @@
+{
+  "name": "jev-chess",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "play": "bun src/cli.ts play",
+    "eval": "bun src/cli.ts eval",
+    "puzzles": "bun src/cli.ts puzzles",
+    "analyze": "bun src/cli.ts analyze",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  }
+}

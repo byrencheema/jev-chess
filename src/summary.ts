@@ -78,7 +78,8 @@ export function puzzleSummary(all: PuzzleResult[]): string {
     lines.push(`  ${b}-${b + BUCKET - 1}: ${s}/${rs.length} solved (${pct(s / rs.length)}), first move ${rs.filter((r) => r.firstMoveCorrect).length}/${rs.length}`);
   }
   const fit = bootstrapRating(rows.map((r) => ({ rating: r.rating, solved: r.solved })));
-  lines.push(`  fitted puzzle rating ${fit.rating.toFixed(0)} (bootstrap 95% CI ${fit.low.toFixed(0)} to ${fit.high.toFixed(0)})`);
+  const bound = solved === 0 ? " (no solves, so this is the fit's lower bound)" : solved === rows.length ? " (all solved, so this is the fit's upper bound)" : "";
+  lines.push(`  fitted puzzle rating ${fit.rating.toFixed(0)} (bootstrap 95% CI ${fit.low.toFixed(0)} to ${fit.high.toFixed(0)})${bound}`);
   const tokens = rows.reduce((s, r) => s + r.inputTokens, 0);
   const models = [...new Set(rows.map((r) => r.model).filter(Boolean))].join(", ");
   lines.push(`  jev: ${callStats(rows.flatMap((r) => r.steps))}`, `  ${tokens.toLocaleString()} input tokens, ${formatUsd(costUsd(tokens))}${models ? `, model ${models}` : ""}`);

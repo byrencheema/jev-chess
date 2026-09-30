@@ -14,7 +14,7 @@ function stats(d: SiteData): string {
   const out: string[] = [];
   if (h.puzzle) out.push(stat("Puzzle rating", int(h.puzzle.rating), `95% CI ${int(h.puzzle.low)} to ${int(h.puzzle.high)}, ${int(h.puzzle.n)} puzzles`));
   out.push(stat("Games played", int(h.games), `against ${opps} ${opps === 1 ? "opponent" : "opponents"}${self ? " and itself" : ""}`));
-  out.push(stat("Total cost", usd(h.costUsd), `${int(h.tokens)} input tokens`));
+  out.push(stat("Test cost", usd(h.costUsd), `${int(h.tokens)} input tokens, all games and puzzles`));
   out.push(stat("Illegal moves", int(h.illegal), `in ${int(h.calls)} calls`, h.illegal === 0 ? "good" : "bad"));
   return `<dl class="stats">${out.join("")}</dl>`;
 }
@@ -129,7 +129,7 @@ ${full ? `<div class="movelist" tabindex="-1"></div>` : ""}
 export function renderPage(d: SiteData, assets: { js: string; css: string }): string {
   const h = d.headline;
   const json = JSON.stringify(d).replace(/</g, "\\u003c");
-  const description = `TypeSafe's System One classifier plays chess by picking one of the legal moves each turn. ${h.puzzle ? `Puzzle rating ${int(h.puzzle.rating)}, ` : ""}${int(h.games)} games, ${usd(h.costUsd)} total, 0 illegal moves.`;
+  const description = `TypeSafe's System One classifier plays chess by picking one of the legal moves each turn. ${h.puzzle ? `Puzzle rating ${int(h.puzzle.rating)}, ` : ""}${int(h.games)} games, ${usd(h.costUsd)} for the whole test, 0 illegal moves.`;
   return `<!doctype html>
 <html lang="en">
 <head>

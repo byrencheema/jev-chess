@@ -13,8 +13,8 @@
   --good-soft: rgba(18, 128, 90, 0.16);
   --bad: #c43d27;
   --bad-soft: rgba(196, 61, 39, 0.14);
-  --sq-l: #e6e9ed;
-  --sq-d: #aab3c0;
+  --sq-l: #d5dbe4;
+  --sq-d: #8b97a8;
   --hl: rgba(47, 60, 224, 0.16);
   --eval-w: #fbfbfa;
   --eval-b: #262931;
@@ -434,6 +434,7 @@ p {
   width: 12.5%;
   height: 12.5%;
   background-size: 100% 100%;
+  filter: drop-shadow(0 1px 1px rgba(10, 12, 20, 0.35));
   transition: transform 220ms var(--ease);
   will-change: transform;
 }

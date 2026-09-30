@@ -1,4 +1,5 @@
-import { basename } from "node:path";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { basename, dirname } from "node:path";
 import { parseArgs } from "node:util";
 import { makeAgent, sharedJev } from "./agents.ts";
 import { analyzeMoves, Evaluator, summarize, type GameAnalysis } from "./analysis.ts";
@@ -21,6 +22,7 @@ const USAGE = `usage:
   bun run puzzles [--agent jev] [--per-band 5] [--band 100] [--min 600] [--max 2600] [--seed 1] [--concurrency N] [--budget usd] [--out file]
   bun run analyze <results/raw/file.jsonl> [--depth 14] [--player jev] [--out file]
   bun src/cli.ts summary <file.jsonl>...
+  bun src/cli.ts pgn <results/raw/games.jsonl>...
 agents: jev, random[:seed], stockfish[:elo | skill=N,movetime=ms,nodes=N,depth=N], maia:1100|1500|1900`;
 
 function pct(p: number | undefined): string {
@@ -215,6 +217,16 @@ async function analyze(args: string[]) {
   );
 }
 
+async function pgn(args: string[]) {
+  for (const file of args) {
+    const rows = [...latestById(readJsonl<GameRow>(file)).values()].sort((a, b) => a.index - b.index);
+    const out = `results/pgn/${basename(file, ".jsonl")}.pgn`;
+    mkdirSync(dirname(out), { recursive: true });
+    writeFileSync(out, rows.map((r) => r.pgn).join("\n\n") + "\n");
+    console.log(`${rows.length} games -> ${out}`);
+  }
+}
+
 async function summary(args: string[]) {
   for (const file of args) {
     const rows = readJsonl<{ steps?: unknown }>(file);
@@ -224,7 +236,7 @@ async function summary(args: string[]) {
 }
 
 const [cmd, ...rest] = Bun.argv.slice(2);
-const commands: Record<string, (args: string[]) => Promise<void>> = { play, eval: evalCmd, puzzles, analyze, summary };
+const commands: Record<string, (args: string[]) => Promise<void>> = { play, eval: evalCmd, puzzles, analyze, pgn, summary };
 const run = cmd ? commands[cmd] : undefined;
 if (!run) {
   console.error(USAGE);

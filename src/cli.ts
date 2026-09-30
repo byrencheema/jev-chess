@@ -2,12 +2,13 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { basename, dirname } from "node:path";
 import { parseArgs } from "node:util";
 import { makeAgent, sharedJev } from "./agents.ts";
-import { analyzeMoves, Evaluator, summarize, type GameAnalysis } from "./analysis.ts";
+import { analyzeMoves, Evaluator, looseCheck, summarize, WINNING_CP, type GameAnalysis, type LooseCheck } from "./analysis.ts";
 import { LC0_PATH, STOCKFISH_PATH } from "./config.ts";
 import type { MoveLog } from "./game.ts";
 import { OPENINGS } from "./openings.ts";
 import { DEFAULT_SAMPLE, PUZZLE_SETS, samplePuzzles, solvePuzzle, type PuzzleResult } from "./puzzles.ts";
 import { appendJsonl, latestById, pool, readJsonl, runMatch, tooManyErrors, type GameRow } from "./runner.ts";
+import { bootstrapRatings } from "./rating.ts";
 import { costUsd, formatUsd } from "./stats.ts";
 import { compareTable, gameSummary, puzzleSummary } from "./summary.ts";
 import { Engine, engineName } from "./uci.ts";
@@ -25,6 +26,8 @@ const USAGE = `usage:
   bun run analyze <results/raw/file.jsonl> [--depth 14] [--player jev] [--out file]
   bun src/cli.ts summary <file.jsonl>...
   bun src/cli.ts pgn <results/raw/games.jsonl>...
+  bun src/cli.ts loose <puzzles.jsonl> [--depth 16]
+  bun src/cli.ts elo --anchor stockfish:1320=1320 [--anchor name=rating]... <games.jsonl>...
 agents: jev, random[:seed], stockfish[:elo | skill=N,movetime=ms,nodes=N,depth=N], maia:1100|1500|1900`;
 
 function pct(p: number | undefined): string {
@@ -230,6 +233,46 @@ async function analyze(args: string[]) {
   );
 }
 
+async function loose(args: string[]) {
+  const { values, positionals } = parseArgs({ args, allowPositionals: true, options: { depth: { type: "string", default: "16" }, out: { type: "string" } } });
+  const file = positionals[0];
+  if (!file) throw new Error("give a puzzles jsonl file");
+  const out = values.out ?? `results/analysis/${basename(file, ".jsonl")}-loose.jsonl`;
+  const rows = [...latestById(readJsonl<PuzzleResult>(file)).values()].filter((r) => !r.error);
+  const done = latestById(readJsonl<LooseCheck>(out));
+  const engine = await new Engine([STOCKFISH_PATH]).init({ Threads: 4, Hash: 256 });
+  const evaluator = new Evaluator(engine, { depth: Number(values.depth) });
+  for (const r of rows) {
+    if (r.solved || done.has(r.id)) continue;
+    const c = await looseCheck(evaluator, r);
+    if (!c) continue;
+    appendJsonl(out, c);
+    done.set(c.id, c);
+  }
+  await engine.quit();
+  const checks = [...done.values()].filter((c) => rows.some((r) => r.id === c.id));
+  const solved = rows.filter((r) => r.solved).length;
+  const winning = checks.filter((c) => c.stillWinning).length;
+  console.log(`${file}: ${rows.length} puzzles, ${solved} solved by Lichess rules; of ${checks.length} failed, ${winning} failing moves still left the solver at +${WINNING_CP} cp or better (depth ${values.depth}), loose solve rate ${pct((solved + winning) / rows.length)} (first failing move only; the rest of the line is not played out)`);
+}
+
+async function elo(args: string[]) {
+  const { values, positionals } = parseArgs({ args, allowPositionals: true, options: { anchor: { type: "string", multiple: true }, player: { type: "string", multiple: true }, samples: { type: "string", default: "500" } } });
+  const anchors: Record<string, number> = {};
+  for (const a of values.anchor ?? []) {
+    const i = a.lastIndexOf("=");
+    anchors[a.slice(0, i)] = Number(a.slice(i + 1));
+  }
+  const games = positionals.flatMap((f) => [...latestById(readJsonl<GameRow>(f)).values()]).filter((g) => g.scoreA !== null && !g.error);
+  const used = games.filter((g) => !g.a.startsWith("random") && !g.b.startsWith("random") && g.a !== g.b);
+  const fit = bootstrapRatings(used.map((g) => ({ a: g.a, b: g.b, scoreA: g.scoreA! })), anchors, Number(values.samples));
+  for (const [p, r] of [...fit.entries()].sort((x, y) => y[1].rating - x[1].rating)) {
+    if (values.player && !values.player.includes(p) && !(p in anchors)) continue;
+    const n = used.filter((g) => g.a === p || g.b === p).length;
+    console.log(`${p.padEnd(22)} ${p in anchors ? `${r.rating} (anchor)` : `${r.rating.toFixed(0)} (95% CI ${r.low.toFixed(0)} to ${r.high.toFixed(0)})`}  ${n} games`);
+  }
+}
+
 async function compare(args: string[]) {
   const { values, positionals } = parseArgs({ args, allowPositionals: true, options: { baseline: { type: "string" }, out: { type: "string" } } });
   const files = positionals;
@@ -262,7 +305,7 @@ async function summary(args: string[]) {
 }
 
 const [cmd, ...rest] = Bun.argv.slice(2);
-const commands: Record<string, (args: string[]) => Promise<void>> = { play, eval: evalCmd, puzzles, analyze, compare, pgn, summary };
+const commands: Record<string, (args: string[]) => Promise<void>> = { play, eval: evalCmd, puzzles, analyze, loose, elo, compare, pgn, summary };
 const run = cmd ? commands[cmd] : undefined;
 if (!run) {
   console.error(USAGE);

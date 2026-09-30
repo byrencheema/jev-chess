@@ -49,3 +49,68 @@ export function bootstrapRating(outcomes: Outcome[], samples = 1000, seed = 1): 
   const at = (q: number) => fits[Math.min(fits.length - 1, Math.max(0, Math.round(q * (fits.length - 1))))]!;
   return { rating, low: at(0.025), high: at(0.975) };
 }
+
+export interface Result2 {
+  a: string;
+  b: string;
+  scoreA: number;
+}
+
+function solveFor(player: string, games: Result2[], ratings: Map<string, number>): number {
+  const gradient = (r: number) => {
+    let g = 0;
+    for (const x of games) {
+      if (x.a === player) g += x.scoreA - pSolve(ratings.get(x.b)!, r);
+      else if (x.b === player) g += 1 - x.scoreA - pSolve(ratings.get(x.a)!, r);
+    }
+    return g;
+  };
+  let lo = RATING_LOW;
+  let hi = RATING_HIGH;
+  if (gradient(lo) <= 0) return lo;
+  if (gradient(hi) >= 0) return hi;
+  for (let i = 0; i < 50; i++) {
+    const mid = (lo + hi) / 2;
+    if (gradient(mid) > 0) lo = mid;
+    else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+export function fitRatings(games: Result2[], anchors: Record<string, number>, rounds = 200): Map<string, number> {
+  const ratings = new Map<string, number>();
+  for (const g of games) for (const p of [g.a, g.b]) ratings.set(p, anchors[p] ?? 1500);
+  const free = [...ratings.keys()].filter((p) => !(p in anchors));
+  for (let r = 0; r < rounds; r++) {
+    let moved = 0;
+    for (const p of free) {
+      const next = solveFor(p, games, ratings);
+      moved = Math.max(moved, Math.abs(next - ratings.get(p)!));
+      ratings.set(p, next);
+    }
+    if (moved < 0.01) break;
+  }
+  return ratings;
+}
+
+export function bootstrapRatings(games: Result2[], anchors: Record<string, number>, samples = 500, seed = 1): Map<string, { rating: number; low: number; high: number }> {
+  const point = fitRatings(games, anchors);
+  const groups = new Map<string, Result2[]>();
+  for (const g of games) {
+    const key = [g.a, g.b].sort().join("|");
+    groups.set(key, [...(groups.get(key) ?? []), g]);
+  }
+  const rng = mulberry32(seed);
+  const draws = new Map<string, number[]>();
+  for (let s = 0; s < samples; s++) {
+    const resample = [...groups.values()].flatMap((gs) => Array.from({ length: gs.length }, () => gs[Math.floor(rng() * gs.length)]!));
+    for (const [p, r] of fitRatings(resample, anchors, 60)) (draws.get(p) ?? draws.set(p, []).get(p)!).push(r);
+  }
+  const out = new Map<string, { rating: number; low: number; high: number }>();
+  for (const [p, r] of point) {
+    const d = (draws.get(p) ?? [r]).sort((x, y) => x - y);
+    const at = (q: number) => d[Math.min(d.length - 1, Math.max(0, Math.round(q * (d.length - 1))))]!;
+    out.set(p, { rating: r, low: at(0.025), high: at(0.975) });
+  }
+  return out;
+}

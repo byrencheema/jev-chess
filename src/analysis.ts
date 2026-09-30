@@ -88,3 +88,32 @@ export function summarize(game: string, player: string, color: "w" | "b", moves:
     bestMatches: moves.filter((m) => m.san === m.best).length,
   };
 }
+
+export const WINNING_CP = 300;
+
+export interface LooseCheck {
+  id: string;
+  rating: number;
+  step: number;
+  fen: string;
+  played: string;
+  expected: string;
+  cpAfterPlayed: number;
+  cpAfterExpected: number;
+  stillWinning: boolean;
+}
+
+export async function looseCheck(evaluator: Evaluator, r: { id: string; rating: number; solved: boolean; steps: { fen: string; san: string; expectedSan: string; correct: boolean }[] }): Promise<LooseCheck | null> {
+  if (r.solved) return null;
+  const i = r.steps.findIndex((s) => !s.correct);
+  const step = r.steps[i];
+  if (!step) return null;
+  const after = (san: string) => {
+    const c = new Chess(step.fen);
+    c.move(san);
+    return c.fen();
+  };
+  const played = -(await evaluator.eval(after(step.san))).cp;
+  const expected = -(await evaluator.eval(after(step.expectedSan))).cp;
+  return { id: r.id, rating: r.rating, step: i, fen: step.fen, played: step.san, expected: step.expectedSan, cpAfterPlayed: played, cpAfterExpected: expected, stillWinning: played >= WINNING_CP };
+}

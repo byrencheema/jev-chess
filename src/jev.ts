@@ -57,7 +57,7 @@ export interface Choice {
   stateVariant: number;
 }
 
-const RETRYABLE = new Set([408, 429, 500, 502, 503, 504, 529]);
+const RETRYABLE = new Set([408, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524, 529]);
 const MAX_ATTEMPTS = 7;
 const MAX_RETRY_AFTER_MS = 30_000;
 const REQUEST_TIMEOUT_MS = 180_000;

@@ -203,7 +203,7 @@ export const VARIANTS: Record<string, PromptVariant> = Object.fromEntries(
   ].map((v) => [v.name, v]),
 );
 
-export const HEADLINE = "v0";
+export const HEADLINE = "describe-pieces-no-board";
 
 export function promptId(v: PromptVariant): string {
   return hashString(JSON.stringify({ ...v, name: undefined })).toString(16);

@@ -226,7 +226,7 @@ async function analyze(args: string[]) {
     }
   }
   await engine.quit();
-  const all = [...done.values()].filter((a) => rows.some((r) => r.id === a.game)).flatMap((a) => a.moves);
+  const all = [...done.values()].filter((a) => a.player === values.player && rows.some((r) => r.id === a.game)).flatMap((a) => a.moves);
   const loss = all.reduce((s, m) => s + m.loss, 0);
   console.log(
     `\n${values.player}: ${all.length} moves, acpl ${(loss / all.length).toFixed(0)}, blunders ${all.filter((m) => m.blunder).length} (${pct(all.filter((m) => m.blunder).length / all.length)}), matches stockfish's best move ${pct(all.filter((m) => m.san === m.best).length / all.length)}  ${dim(`${engine.name}, ${JSON.stringify(limits)}`)}`,

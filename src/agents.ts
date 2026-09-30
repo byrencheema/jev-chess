@@ -254,7 +254,7 @@ export function makeAgent(spec: string, deps: AgentDeps = {}): Agent {
     case "jev-v0":
       return new JevAgent(deps.jev?.() ?? new JevClient(jevConfig()), VARIANTS.v0!, "jev-v0");
     case "jev-x3": {
-      const base = VARIANTS[HEADLINE]!;
+      const base = VARIANTS.v0!;
       return new JevEnsembleAgent(deps.jev?.() ?? new JevClient(jevConfig()), X3_STATES.map((state, i) => ({ ...base, name: `x3-${i}`, state })), "jev-x3");
     }
     case "random":

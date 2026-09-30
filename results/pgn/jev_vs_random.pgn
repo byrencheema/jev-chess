@@ -1,0 +1,23 @@
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "1"]
+[White "jev"]
+[Black "random"]
+[Result "1/2-1/2"]
+[Opening "Two knights defence"]
+[Termination "threefold"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Bxf7+ Ke7 5. Nxe5 Rg8 6. Bxg8 d6 7. Nxc6+ bxc6 8. Qg4 Qd7 9. Qxd7+ Kxd7 10. Be6+ Ke8 11. Bxc8 Nd7 12. Bxd7+ Ke7 13. Bxc6 g5 14. Bxa8 Kd8 15. O-O c6 16. Bxc6 a6 17. e5 Kc8 18. Bd7+ Kb7 19. Bc8+ Ka8 20. Bb7+ Kb8 21. Bxa6 g4 22. exd6 h5 23. d7 Bb4 24. d8=Q+ Ka7 25. Qa8+ Kxa8 26. Bb7+ Kb8 27. Ba8 Kc7 28. Bb7 Ba5 29. Bc6 Bb4 30. Bb7 Kd6 31. Rd1 h4 32. Bd5 h3 33. gxh3 Kxd5 34. Nc3+ Ke5 35. Re1+ Kf5 36. Re5+ Kg6 37. Re6+ Kh7 38. Rh6+ Kg7 39. Rh7+ Kf8 40. Rh8+ Ke7 41. Rh7+ Kd8 42. Rh8+ Ke7 43. Rh7+ Kd6 44. Rd7+ Ke6 45. Rd6+ Kf5 46. Rf6+ Kg5 47. Rf5+ Kxf5 48. hxg4+ Kg5 49. Ne4+ Kxg4 50. Nf6+ Kg5 51. Ne4+ Kf5 52. Nd6+ Kg5 53. Ne4+ Kh6 54. Nd6 Bxd6 55. d3+ Kg6 56. d4 Bxh2+ 57. Kxh2 Kf6 58. d5 Kg7 59. d6 Kh7 60. d7 Kh8 61. d8=Q+ Kh7 62. Qh8+ Kxh8 63. Rb1 Kg7 64. Bh6+ Kf7 65. Bg7 Kg6 66. Rg1+ Kh7 67. Rh1 Kg6 68. Rg1+ Kh7 69. Rh1 Kg6 70. Rg1+ 1/2-1/2
+
+[Event "jev-chess"]
+[Site "?"]
+[Date "2026.09.30"]
+[Round "2"]
+[White "random"]
+[Black "jev"]
+[Result "0-1"]
+[Opening "Two knights defence"]
+[Termination "checkmate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. b3 d5 5. Bb2 dxc4 6. c3 cxb3 7. h4 bxa2 8. d4 axb1=Q 9. g3 Nxd4 10. Rf1 Qxe4+ 11. Kd2 Nb3# 0-1
